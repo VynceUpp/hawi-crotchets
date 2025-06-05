@@ -4,9 +4,6 @@ A modern e-commerce web app built with **Next.js**, **Tailwind CSS**, and **Type
 
 ---
 
-
----
-
 ## 🚀 Features
 
 - 🏡 Beautiful landing page with a hero section, testimonials, and featured products
@@ -34,14 +31,17 @@ A modern e-commerce web app built with **Next.js**, **Tailwind CSS**, and **Type
 
 ```bash
 git clone https://github.com/your-username/hawi-crotchets.git
-cd hawi-crotchets
-npm install
-npm run dev
 
-```bash
+cd hawi-crotchets
+
+npm install
+
+npm run dev
+```
 
 ---
 
 ## 🪪 License
+
 MIT License © 2025 VynceUpp
 
