@@ -3,14 +3,20 @@ import * as React from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { MapPin, Mail, Phone } from "lucide-react";
+import { MapPin, Mail, Phone, LucideIcon } from "lucide-react";
 import { milestones, stats, values } from "@/data/AllData";
 
+interface StatCardProps {
+  stat: {
+    icon: LucideIcon;
+    number: string | number;
+    label: string;
+  }
+}
 
-
-function StatsCard({ stat }) {
+function StatsCard({ stat }: StatCardProps) {
   const IconComponent = stat.icon;
-  
+
   return (
     <Card className="text-center p-6 bg-white/80 backdrop-blur-sm border-2 border-pink-100 hover:border-pink-200 transition-all duration-300 hover:shadow-lg group">
       <CardContent className="p-0">
@@ -28,7 +34,7 @@ function StatsCard({ stat }) {
   );
 }
 
-function TimelineItem({ milestone, index }) {
+function TimelineItem({ milestone, index }: { milestone: any, index: number }) {
   const IconComponent = milestone.icon;
   const isEven = index % 2 === 0;
 
@@ -65,7 +71,15 @@ function TimelineItem({ milestone, index }) {
   );
 }
 
-function ValueCard({ value }) {
+interface ValueCardProps {
+  value: {
+    icon: React.ReactNode;
+    title: string;
+    description: string;
+  }
+}
+
+function ValueCard({ value }: ValueCardProps) {
   return (
     <Card className="p-6 bg-white/90 backdrop-blur-sm border-2 border-pink-100 hover:border-pink-300 transition-all duration-300 hover:shadow-xl group">
       <CardContent className="p-0">
@@ -89,7 +103,7 @@ export default function About() {
   return (
     <section className="py-16 bg-gradient-to-b from-pink-50 via-white to-purple-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        
+
         {/* Header */}
         <div className="text-center mb-16">
           <h2 className="text-5xl lg:text-6xl font-bold text-gray-900 mb-6 logo">
@@ -104,14 +118,14 @@ export default function About() {
         <div className="grid lg:grid-cols-2 gap-12 items-center mb-20">
           <div className="order-2 lg:order-1">
             <div className="relative">
-              <div 
+              <div
                 className="overflow-hidden bg-gradient-to-br from-pink-200 to-purple-200 p-1"
                 style={{
                   clipPath: "polygon(0% 0%, 95% 0%, 100% 100%, 5% 100%)",
                   borderRadius: "2rem",
                 }}
               >
-                <div 
+                <div
                   className="overflow-hidden bg-white"
                   style={{
                     clipPath: "polygon(0% 0%, 95% 0%, 100% 100%, 5% 100%)",
@@ -124,32 +138,32 @@ export default function About() {
                   />
                 </div>
               </div>
-              
+
             </div>
           </div>
-          
+
           <div className="order-1 lg:order-2 space-y-6">
             <h3 className="text-3xl font-bold text-gray-900">
               Hi, I'm Loise! 👋
             </h3>
             <div className="space-y-4 text-gray-600 leading-relaxed">
               <p>
-                What started as a simple hobby during my college years has blossomed into a beautiful journey 
-                of creativity and connection. I discovered the meditative art of crocheting during a particularly 
+                What started as a simple hobby during my college years has blossomed into a beautiful journey
+                of creativity and connection. I discovered the meditative art of crocheting during a particularly
                 stressful semester, and it quickly became my sanctuary.
               </p>
               <p>
-                Each piece I create carries a story - from the late-night sessions working on baby blankets 
-                for expecting friends, to the custom scarves that have traveled across the world. I believe 
+                Each piece I create carries a story - from the late-night sessions working on baby blankets
+                for expecting friends, to the custom scarves that have traveled across the world. I believe
                 that handmade items carry an energy and warmth that mass-produced goods simply cannot match.
               </p>
               <p>
-                Today, Hawi Crotchets is more than just a business - it's a community of people who 
-                appreciate the beauty of slow fashion, sustainable crafting, and the irreplaceable 
+                Today, Hawi Crotchets is more than just a business - it's a community of people who
+                appreciate the beauty of slow fashion, sustainable crafting, and the irreplaceable
                 value of items made with intention and love.
               </p>
             </div>
-            
+
             {/* Contact Info */}
             <div className="flex flex-col sm:flex-row gap-4 pt-6">
               <div className="flex items-center gap-2 text-sm text-gray-600">
@@ -213,15 +227,15 @@ export default function About() {
             Let's create something beautiful together. Browse our collection or reach out for custom orders.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button 
-              size="lg" 
+            <Button
+              size="lg"
               className="bg-white text-pink-600 hover:bg-gray-100 px-8 py-3 rounded-full font-semibold"
             >
               Shop Collection
             </Button>
-            <Button 
-              variant="outline" 
-              size="lg" 
+            <Button
+              variant="outline"
+              size="lg"
               className="border-2 border-white text-black hover:bg-white hover:text-pink-600 px-8 py-3 rounded-full font-semibold"
             >
               Custom Order

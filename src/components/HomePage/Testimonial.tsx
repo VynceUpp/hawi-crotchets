@@ -6,7 +6,17 @@ import { Badge } from "@/components/ui/badge";
 import { Star, Quote, ChevronLeft, ChevronRight, Sparkles } from "lucide-react";
 import { testimonials } from "@/data/AllData";
 
-function StarRating({ rating }) {
+interface Testimonial {
+  id: number;
+  text: string;
+  rating: number;
+  name: string;
+  location: string;
+  product: string;
+  verified: boolean;
+}
+
+function StarRating({ rating }: { rating: number }) {
   return (
     <div className="flex gap-1">
       {[...Array(5)].map((_, i) => (
@@ -21,7 +31,7 @@ function StarRating({ rating }) {
   );
 }
 
-function TestimonialCard({ testimonial, isActive = false }) {
+function TestimonialCard({ testimonial, isActive = false }: { testimonial: Testimonial; isActive?: boolean }) {
   return (
     <Card className={`p-6 bg-white/90 backdrop-blur-sm border-2 transition-all duration-300 hover:shadow-xl group ${
       isActive ? "border-pink-300 shadow-lg scale-105" : "border-pink-100 hover:border-pink-300"
@@ -58,7 +68,7 @@ function TestimonialCard({ testimonial, isActive = false }) {
         <div className="flex items-center gap-3">
           <div className="w-12 h-12 bg-gradient-to-br from-pink-200 to-purple-200 rounded-full flex items-center justify-center">
             <span className="text-pink-700 font-semibold text-lg">
-              {testimonial.name.split(' ').map(n => n[0]).join('')}
+              {testimonial.name.split(' ').map((n: string) => n[0]).join('')}
             </span>
           </div>
           <div>
@@ -100,7 +110,7 @@ export default function Testimonials() {
     );
   };
 
-  const goToTestimonial = (index) => {
+  const goToTestimonial = (index: number) => {
     setCurrentIndex(index);
     setIsAutoPlaying(false);
   };

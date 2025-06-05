@@ -22,7 +22,7 @@ import { products } from "@/data/AllData";
 import { useRouter } from "next/navigation";
 
 // Enhanced Image Preview Modal Component
-function ImagePreviewModal({ product, isOpen, onClose }) {
+function ImagePreviewModal({ product, isOpen, onClose }: { product: any, isOpen: boolean, onClose: () => void }) {
     if (!isOpen || !product) return null;
 
     return (
@@ -95,20 +95,17 @@ function ImagePreviewModal({ product, isOpen, onClose }) {
                                 <div className="flex items-center gap-2 pt-2">
                                     <span className="text-sm text-gray-300">Available in:</span>
                                     <div className="flex gap-2">
-                                        {product.colors.map((color, index) => (
+                                        {product.colors.map((color: string, index: number) => (
                                             <div
                                                 key={index}
-                                                className="w-5 h-5 rounded-full border-2 border-white/50"
-                                                style={{
-                                                    backgroundColor:
-                                                        color.toLowerCase() === 'natural' ? '#F5F5DC' :
-                                                            color.toLowerCase() === 'sage' ? '#9CAF88' :
-                                                                color.toLowerCase() === 'terracotta' ? '#E2725B' :
-                                                                    color.toLowerCase() === 'oatmeal' ? '#F7F3E9' :
-                                                                        color.toLowerCase() === 'dusty pink' ? '#D4A5A5' :
-                                                                            color.toLowerCase() === 'cream' ? '#FFFDD0' :
-                                                                                color.toLowerCase()
-                                                }}
+                                                className={`w-5 h-5 rounded-full border-2 border-white/50 ${
+                                                    color.toLowerCase() === 'natural' ? 'color-natural' :
+                                                    color.toLowerCase() === 'sage' ? 'color-sage' :
+                                                    color.toLowerCase() === 'terracotta' ? 'color-terracotta' :
+                                                    color.toLowerCase() === 'oatmeal' ? 'color-oatmeal' :
+                                                    color.toLowerCase() === 'dusty pink' ? 'color-dusty-pink' :
+                                                    color.toLowerCase() === 'cream' ? 'color-cream' : ''
+                                                }`}
                                                 title={color}
                                             />
                                         ))}
@@ -124,7 +121,12 @@ function ImagePreviewModal({ product, isOpen, onClose }) {
 }
 
 // Enhanced Professional Product Card Component
-function ProductCard({ product, onImageClick, viewMode, router }) {
+function ProductCard({ product, onImageClick, viewMode, router }: { 
+    product: any;
+    onImageClick: (product: any) => void;
+    viewMode: string;
+    router: any;
+}) {
     const [isFavorited, setIsFavorited] = useState(false);
     const [isHovered, setIsHovered] = useState(false);
 
@@ -179,6 +181,8 @@ function ProductCard({ product, onImageClick, viewMode, router }) {
                                 e.stopPropagation();
                                 setIsFavorited(!isFavorited);
                             }}
+                            title="Add to Wishlist"
+                            aria-label="Add to Wishlist"
                         >
                             <Heart
                                 className={`w-4 h-4 ${isFavorited ? 'fill-red-500 text-red-500' : 'text-gray-600'
@@ -192,6 +196,8 @@ function ProductCard({ product, onImageClick, viewMode, router }) {
                                 e.stopPropagation();
                                 onImageClick(product);
                             }}
+                            title="Quick View"
+                            aria-label="Quick View Product"
                         >
                             <Eye className="w-4 h-4 text-gray-600" />
                         </button>
@@ -242,7 +248,7 @@ function ProductCard({ product, onImageClick, viewMode, router }) {
                             <div className="xs:flex items-center gap-3 mb-2">
                                 <span className="text-sm text-gray-600 font-medium">Colors:</span>
                                 <div className="flex gap-1.5">
-                                    {product.colors.slice(0, 5).map((color, index) => (
+                                    {product.colors.slice(0, 5).map((color: string, index: number) => (
                                         <div
                                             key={index}
                                             className="w-4 h-4 rounded-full border border-gray-200 shadow-sm hover:scale-110 transition-transform cursor-pointer"
@@ -316,7 +322,7 @@ export default function ProductsPage() {
     const [priceRange, setPriceRange] = useState([0, 5000]);
     const [showFilters, setShowFilters] = useState(false);
     const [showMoreFilters, setShowMoreFilters] = useState(false);
-    const [previewProduct, setPreviewProduct] = useState(null);
+    const [previewProduct, setPreviewProduct] = useState<Product | null>(null);
     const [isPreviewOpen, setIsPreviewOpen] = useState(false);
 
     // Get unique categories and price range
@@ -346,7 +352,7 @@ export default function ProductsPage() {
                 case "rating":
                     return b.rating - a.rating;
                 case "newest":
-                    return b.isNew - a.isNew;
+                    return Number(b.isNew) - Number(a.isNew);
                 default:
                     return 0;
             }
@@ -355,7 +361,22 @@ export default function ProductsPage() {
         return filtered;
     }, [searchTerm, selectedCategory, sortBy, priceRange]);
 
-    const handleImageClick = (product) => {
+    interface Product {
+        id: string | number;
+        name: string;
+        category: string;
+        price: number;
+        originalPrice?: number;
+        image: string;
+        rating: number;
+        reviews: number;
+        isNew?: boolean;
+        isSale?: boolean;
+        colors: string[];
+        slug: string;
+    }
+
+    const handleImageClick = (product: Product): void => {
         setPreviewProduct(product);
         setIsPreviewOpen(true);
     };
@@ -367,7 +388,7 @@ export default function ProductsPage() {
 
     // Close modal on Escape key
     React.useEffect(() => {
-        const handleEscape = (e) => {
+        const handleEscape = (e: KeyboardEvent) => {
             if (e.key === 'Escape' && isPreviewOpen) {
                 handleClosePreview();
             }

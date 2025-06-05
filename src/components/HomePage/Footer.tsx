@@ -64,7 +64,12 @@ function NewsletterSignup() {
   );
 }
 
-function FooterSection({ title, links }) {
+interface FooterLink {
+  href: string;
+  name: string;
+}
+
+function FooterSection({ title, links }: { title: string; links: FooterLink[] }) {
   return (
     <div>
       <h4 className="font-bold text-gray-900 mb-4 text-lg">{title}</h4>
@@ -85,7 +90,17 @@ function FooterSection({ title, links }) {
   );
 }
 
-function SocialLink({ social }) {
+interface SocialLinkProps {
+  social: {
+    href: string;
+    icon: React.ElementType;
+    color: string;
+    name: string;
+    followers: string | number;
+  }
+}
+
+function SocialLink({ social }: SocialLinkProps) {
   const IconComponent = social.icon;
   
   return (

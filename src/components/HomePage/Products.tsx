@@ -8,7 +8,7 @@ import { Heart, ShoppingCart, Star, ChevronLeft, ChevronRight, X, ZoomIn } from 
 import { products } from "@/data/AllData";
 
 // Image Preview Modal Component
-function ImagePreviewModal({ product, isOpen, onClose }) {
+function ImagePreviewModal({ product, isOpen, onClose }: { product: any, isOpen: boolean, onClose: () => void }) {
   if (!isOpen || !product) return null;
 
   return (
@@ -62,7 +62,26 @@ function ImagePreviewModal({ product, isOpen, onClose }) {
   );
 }
 
-function ProductCard({ product, onSelect, isSelected, onImageClick }) {
+interface Product {
+  id: number;
+  name: string;
+  price: number;
+  originalPrice?: number;
+  colors: string[];
+  image: string;
+  category: string;
+  rating: number;
+  reviews: number;
+  isNew?: boolean;
+  isSale?: boolean;
+}
+
+function ProductCard({ product, onSelect, isSelected, onImageClick }: { 
+  product: Product; 
+  onSelect: (product: Product) => void; 
+  isSelected: boolean; 
+  onImageClick: (product: Product) => void; 
+}) {
   const [isFavorited, setIsFavorited] = useState(false);
 
   return (
@@ -167,7 +186,7 @@ function ProductCard({ product, onSelect, isSelected, onImageClick }) {
           <div className="flex items-center gap-2">
             <span className="text-xs text-gray-500">Colors:</span>
             <div className="flex gap-1">
-              {product.colors.slice(0, 3).map((color, index) => (
+              {product.colors.slice(0, 3).map((color, index: number) => (
                 <div
                   key={index}
                   className="w-4 h-4 rounded-full border border-gray-200"
@@ -228,12 +247,12 @@ function ProductCard({ product, onSelect, isSelected, onImageClick }) {
 }
 
 export default function Products() {
-  const [selectedProduct, setSelectedProduct] = useState(null);
-  const [previewProduct, setPreviewProduct] = useState(null);
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+  const [previewProduct, setPreviewProduct] = useState<Product | null>(null);
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
-  const scrollContainerRef = React.useRef(null);
+  const scrollContainerRef = React.useRef<HTMLDivElement | null>(null);
 
-  const scroll = (direction) => {
+  const scroll = (direction: 'left' | 'right') => {
     if (scrollContainerRef.current) {
       const scrollAmount = 300;
       scrollContainerRef.current.scrollBy({
@@ -243,11 +262,11 @@ export default function Products() {
     }
   };
 
-  const handleProductSelect = (product) => {
+  const handleProductSelect = (product: Product) => {
     setSelectedProduct(selectedProduct?.id === product.id ? null : product);
   };
 
-  const handleImageClick = (product) => {
+  const handleImageClick = (product: Product) => {
     setPreviewProduct(product);
     setIsPreviewOpen(true);
   };
@@ -267,7 +286,7 @@ export default function Products() {
 
   // Close modal on Escape key
   React.useEffect(() => {
-    const handleEscape = (e) => {
+    const handleEscape = (e: KeyboardEvent) => {
       if (e.key === 'Escape' && isPreviewOpen) {
         handleClosePreview();
       }
