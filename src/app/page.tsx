@@ -1,7 +1,7 @@
 export default function Home() {
   return (
     <div>
-      <h3>Hawi Cortchets</h3>
+      <h3>Hawi Crotchets</h3>
     </div>
   )
 }
