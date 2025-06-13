@@ -230,7 +230,7 @@ function ProductCard({ product, onImageClick, viewMode, router }: {
 
                 {/* Product Details */}
                 <div className={`p-5 pl-0 ${contentClasses}`}
-                onClick={() => router.push(`/${product.slug}/page`)}>
+                onClick={() => router.push(`/shop/${product.slug}`)}>
                     {/* Main Content */}
                     <div className="space-y-4 flex-1">
                         {/* Category & Title */}

@@ -299,3 +299,78 @@ export const products = [
     slug: "fringes"
   },
 ];
+
+export const sampleProduct = {
+  id: 1,
+  name: "Premium Wireless Headphones",
+  category: "Electronics",
+  brand: "TechSound Pro",
+  price: 12500,
+  originalPrice: 18000,
+  rating: 4.7,
+  TotalReviews: 243,
+  isNew: true,
+  isSale: true,
+  inStock: true,
+  stockCount: 28,
+  estimatedDelivery: "2-3 business days",
+  colors: ["Midnight Black", "Pure White", "Rose Gold", "Space Gray"],
+  sizes: ["One Size"],
+  images: [
+    "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800&h=600&fit=crop",
+    "https://images.unsplash.com/photo-1484704849700-f032a568e944?w=800&h=600&fit=crop",
+    "https://images.unsplash.com/photo-1546435770-a3e426bf472b?w=800&h=600&fit=crop",
+    "https://images.unsplash.com/photo-1583394838336-acd977736f90?w=800&h=600&fit=crop"
+  ],
+  description: "Experience crystal-clear audio with our premium wireless headphones. Featuring advanced noise cancellation technology, 30-hour battery life, and superior comfort for all-day wear. Perfect for music lovers, professionals, and anyone who values high-quality sound.",
+  features: [
+    "Active Noise Cancellation (ANC)",
+    "30-hour battery life with quick charge",
+    "Premium leather ear cushions",
+    "Bluetooth 5.0 connectivity",
+    "Built-in microphone for calls",
+    "Foldable design for portability",
+    "Multi-device pairing",
+    "Touch controls"
+  ],
+  specifications: {
+    "Driver Size": "40mm",
+    "Frequency Response": "20Hz - 20kHz",
+    "Impedance": "32 Ohms",
+    "Battery Life": "30 hours",
+    "Charging Time": "2 hours",
+    "Weight": "250g",
+    "Connectivity": "Bluetooth 5.0, 3.5mm jack",
+    "Warranty": "2 years"
+  },
+  careInstructions: [
+    "Clean with a soft, dry cloth",
+    "Avoid exposure to water or moisture",
+    "Store in the provided carrying case",
+    "Charge regularly to maintain battery health",
+    "Handle cables gently to prevent damage"
+  ],
+  reviews: [
+    {
+      id: 1,
+      name: "John K.",
+      rating: 5,
+      comment: "Amazing sound quality and comfort. Worth every penny!",
+      date: "2 days ago"
+    },
+    {
+      id: 2,
+      name: "Sarah M.",
+      rating: 4,
+      comment: "Great headphones, battery life is impressive.",
+      date: "1 week ago"
+    },
+    {
+      id: 3,
+      name: "Mike R.",
+      rating: 5,
+      comment: "Perfect for my daily commute. Noise cancellation works great!",
+      date: "2 weeks ago"
+    }
+  ]
+};

@@ -113,14 +113,14 @@ export default function Hero() {
                         <Button
                              onClick={() => router.push("/shop")}
                             size="lg"
-                            className="bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white px-8 py-3 rounded-full font-semibold shadow-lg hover:shadow-xl transition-all duration-300"
+                            className="bg-gradient-to-r cursor-pointer from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white px-8 py-3 rounded-full font-semibold shadow-lg hover:shadow-xl transition-all duration-300"
                         >
                             See Collection
                         </Button>
                         <Button
                             variant="outline"
                             size="lg"
-                            className="border-2 border-pink-300 text-pink-600 hover:bg-pink-50 px-8 py-3 rounded-full font-semibold transition-all duration-300"
+                            className="border-2 border-pink-300 cursor-pointer text-pink-600 hover:bg-pink-50 px-8 py-3 rounded-full font-semibold transition-all duration-300"
                         >
                             Learn More
                         </Button>
