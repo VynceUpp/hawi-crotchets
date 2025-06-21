@@ -5,21 +5,26 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: '2025-05-28.basil',
 });
 
-export async function GET(req: NextRequest, context: { params: { id: string } }) {
-  const { id } = context.params;
+export async function GET(req: NextRequest) {
+  const id = req.nextUrl.pathname.split('/').pop(); // get ID from URL
+
+  if (!id) {
+    return NextResponse.json({ error: 'Missing session ID' }, { status: 400 });
+  }
 
   try {
     const session = await stripe.checkout.sessions.retrieve(id, {
       expand: ['line_items.data.price.product'],
     });
 
-    const items = session.line_items?.data.map(item => ({
-      id: item.id,
-      name: (item.price?.product as Stripe.Product)?.name || 'Product',
-      quantity: item.quantity || 1,
-      price: (item.amount_total || 0) / 100,
-      image: ((item.price?.product as Stripe.Product)?.images || [])[0],
-    })) || [];
+    const items =
+      session.line_items?.data.map(item => ({
+        id: item.id,
+        name: (item.price?.product as Stripe.Product)?.name || 'Product',
+        quantity: item.quantity || 1,
+        price: (item.amount_total || 0) / 100,
+        image: ((item.price?.product as Stripe.Product)?.images || [])[0],
+      })) || [];
 
     return NextResponse.json({
       orderNumber: session.id,
