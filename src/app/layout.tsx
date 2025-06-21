@@ -5,7 +5,7 @@ import Header from "@/components/HomePage/Header";
 import { LoadingProvider } from "./providers/LoadingProvider";
 import { CartProvider } from "@/context/CartContext";
 import { Toaster } from "@/components/ui/sonner";
-
+import { Analytics } from "@vercel/analytics/next"
 const poppins = Poppins({
   variable: "--font-poppins",
   subsets: ["latin"],
@@ -41,6 +41,7 @@ export default function RootLayout({
             {children}
           </CartProvider>
           <Toaster />
+          <Analytics />
         </LoadingProvider>
       </body>
     </html>
