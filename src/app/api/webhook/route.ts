@@ -3,14 +3,14 @@ import Stripe from 'stripe';
 import { doc, setDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase/firebase';
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
+const stripe = new Stripe(process.env.NEXT_STRIPE_SECRET_KEY!, {
   apiVersion: '2025-05-28.basil',
 });
 
 export async function POST(req: NextRequest) {
   const rawBody = await req.text(); // must be text, not json
   const signature = req.headers.get('stripe-signature')!;
-  const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET!;
+  const webhookSecret = process.env.NEXT_STRIPE_WEBHOOK_SECRET!;
 
   let event: Stripe.Event;
 
