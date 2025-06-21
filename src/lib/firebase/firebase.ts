@@ -1,7 +1,7 @@
-import { initializeApp } from 'firebase/app';
+import { initializeApp, getApps, getApp } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
-import { getAnalytics, isSupported } from 'firebase/analytics';
 import { getFirestore } from 'firebase/firestore';
+import { getAnalytics, isSupported } from 'firebase/analytics';
 
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY!,
@@ -13,13 +13,15 @@ const firebaseConfig = {
   measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID!,
 };
 
-const app = initializeApp(firebaseConfig);
+// ✅ Prevent duplicate initialization
+const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
+
 const auth = getAuth(app);
-const db = getFirestore(app)
+const db = getFirestore(app);
 
 let analytics: ReturnType<typeof getAnalytics> | null = null;
 isSupported().then((yes) => {
   if (yes) analytics = getAnalytics(app);
 });
 
-export { auth, analytics,db };
+export { app, auth, db, analytics };
