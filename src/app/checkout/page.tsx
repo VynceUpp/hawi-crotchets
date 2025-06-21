@@ -1,47 +1,12 @@
 'use client';
 import React, { useState } from 'react';
-import { ShoppingBag, Trash2, Plus, Minus, Phone, MapPin, User, Lock, ChevronDown, ChevronUp } from 'lucide-react';
+import { ShoppingBag, Phone, MapPin, User, Lock, ChevronDown, ChevronUp } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-
-interface CartItem {
-  id: number;
-  name: string;
-  price: number;
-  quantity: number;
-  image: string;
-  size?: string;
-  color?: string;
-}
+import { useCart } from '@/context/CartContext';
+import { loadStripe } from '@stripe/stripe-js';
 
 const CheckoutPage: React.FC = () => {
-  const [cartItems, setCartItems] = useState<CartItem[]>([
-    {
-      id: 1,
-      name: "Handmade Baby Blanket",
-      price: 2500,
-      quantity: 1,
-      image: "/api/placeholder/100/100",
-      size: "Medium",
-      color: "Soft Pink"
-    },
-    {
-      id: 2,
-      name: "Crochet Handbag",
-      price: 1800,
-      quantity: 2,
-      image: "/api/placeholder/100/100",
-      size: "Large",
-      color: "Cream"
-    },
-    {
-      id: 3,
-      name: "Cotton Pot Holders Set",
-      price: 800,
-      quantity: 1,
-      image: "/api/placeholder/100/100",
-      color: "Multi-color"
-    }
-  ]);
+  const { cartItems, updateQuantity } = useCart();
 
   const [customerInfo, setCustomerInfo] = useState({
     fullName: '',
@@ -56,25 +21,14 @@ const CheckoutPage: React.FC = () => {
   const [showPaymentForm, setShowPaymentForm] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const [showCartDetails, setShowCartDetails] = useState(true);
+  const [loading, setLoading] = useState(false);
+  const [orderPlaced, setOrderPlaced] = useState(false);
   const router = useRouter();
 
-  const updateQuantity = (id: number, change: number) => {
-    setCartItems(prev => 
-      prev.map(item => 
-        item.id === id 
-          ? { ...item, quantity: Math.max(1, item.quantity + change) }
-          : item
-      )
-    );
-  };
-
-  const removeItem = (id: number) => {
-    setCartItems(prev => prev.filter(item => item.id !== id));
-  };
-
-  const subtotal = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+  const subtotal = cartItems.reduce((sum, item) => sum + (item.product.price * item.quantity), 0);
   const deliveryFee = 200;
   const total = subtotal + deliveryFee;
+  const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
 
   const handleInputChange = (field: string, value: string) => {
     setCustomerInfo(prev => ({ ...prev, [field]: value }));
@@ -106,6 +60,40 @@ const CheckoutPage: React.FC = () => {
     }, 3000);
   };
 
+  const handleCardPayment = async () => {
+    const stripe = await stripePromise;
+    const response = await fetch('/api/checkout', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ items: cartItems }),
+    });
+
+    const data = await response.json();
+
+    if (data.url) {
+      window.location.href = data.url;
+    } else {
+      alert('Stripe checkout failed');
+    }
+  };
+
+  if (orderPlaced) {
+    return (
+      <div className="p-8 text-center">
+        <h1 className="text-2xl font-bold mb-4">Thank you for your order!</h1>
+        <p>We have received your order and will contact you soon.</p>
+      </div>
+    );
+  }
+
+  if (cartItems.length === 0) {
+    return (
+      <div className="p-8 text-center text-gray-700">
+        Your cart is empty. Please add products before checking out.
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#f7d6c5] via-[#ffffff] to-[#ffffff] py-4 px-4">
       <div className="max-w-4xl mx-auto">
@@ -119,7 +107,7 @@ const CheckoutPage: React.FC = () => {
 
         {/* Cart Items - Prominent Display */}
         <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-4 md:p-6 shadow-lg border border-orange-100 mb-4">
-          <div 
+          <div
             className="flex items-center justify-between cursor-pointer md:cursor-default mb-4"
             onClick={() => setShowCartDetails(!showCartDetails)}
           >
@@ -131,46 +119,47 @@ const CheckoutPage: React.FC = () => {
               {showCartDetails ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
             </div>
           </div>
-          
+
           <div className={`space-y-3 ${showCartDetails ? 'block' : 'hidden md:block'}`}>
-            {cartItems.map((item) => (
-              <div key={item.id} className="flex gap-3 p-3 md:p-4 bg-white/60 rounded-xl border border-orange-50">
+            {cartItems.map(({ product, quantity }) => (
+              <div key={product.id} className="flex gap-3 p-3 md:p-4 bg-white/60 rounded-xl border border-orange-50">
                 <div className="w-16 h-16 md:w-20 md:h-20 bg-orange-100 rounded-lg flex items-center justify-center flex-shrink-0">
                   <ShoppingBag className="text-orange-500" size={16} />
                 </div>
-                
+
                 <div className="flex-1 min-w-0">
-                  <h3 className="text-sm md:text-base font-semibold text-gray-800 truncate">{item.name}</h3>
-                  {item.size && <p className="text-xs md:text-sm text-gray-600">Size: {item.size}</p>}
-                  {item.color && <p className="text-xs md:text-sm text-gray-600">Color: {item.color}</p>}
-                  <p className="text-sm md:text-lg font-bold text-orange-600">KSh {item.price.toLocaleString()}</p>
-                </div>
-                
-                <div className="flex flex-col items-end gap-2">
-                  <button
-                    onClick={() => removeItem(item.id)}
-                    className="text-red-500 hover:text-red-700 transition-colors p-1"
-                  >
-                    <Trash2 size={14} />
-                  </button>
-                  
-                  <div className="flex items-center gap-1 bg-white rounded-lg border text-xs">
+                  <h3 className="text-sm md:text-base font-semibold text-gray-800 truncate">{product.name}</h3>
+                  {product.price && <p className="text-xs md:text-sm text-gray-600">Price: KES {product.price}</p>}
+                  {product.estimatedDelivery && (
+                    <p className="text-xs md:text-sm text-gray-600">
+                      Estimated Delivery: {product.estimatedDelivery}
+                    </p>
+                  )}
+                  {product.inStock ? (
+                    <p className="text-xs md:text-sm text-green-600 font-medium">In Stock</p>
+                  ) : (
+                    <p className="text-xs md:text-sm text-red-600 font-medium">Out of Stock</p>
+                  )}
+
+                  {/* Quantity Controller */}
+                  <div className="mt-2 flex items-center gap-2">
                     <button
-                      onClick={() => updateQuantity(item.id, -1)}
-                      className="p-1 hover:bg-gray-100 rounded-l-lg transition-colors"
+                      onClick={() => updateQuantity(product.id, quantity - 1)}
+                      className="px-2 py-1 bg-gray-200 rounded-md text-gray-700 text-sm"
                     >
-                      <Minus size={12} />
+                      -
                     </button>
-                    <span className="px-2 py-1 font-semibold min-w-[24px] text-center">{item.quantity}</span>
+                    <span className="text-sm font-medium">{quantity}</span>
                     <button
-                      onClick={() => updateQuantity(item.id, 1)}
-                      className="p-1 hover:bg-gray-100 rounded-r-lg transition-colors"
+                      onClick={() => updateQuantity(product.id, quantity + 1)}
+                      className="px-2 py-1 bg-gray-200 rounded-md text-gray-700 text-sm"
                     >
-                      <Plus size={12} />
+                      +
                     </button>
                   </div>
                 </div>
               </div>
+
             ))}
           </div>
         </div>
@@ -178,7 +167,7 @@ const CheckoutPage: React.FC = () => {
         {/* Order Summary - Very Prominent */}
         <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-4 md:p-6 shadow-lg border border-orange-100 mb-4">
           <h3 className="text-lg md:text-xl font-semibold text-gray-800 mb-4">Order Summary</h3>
-          
+
           <div className="space-y-2 md:space-y-3">
             <div className="flex justify-between text-sm md:text-base text-gray-600">
               <span>Subtotal</span>
@@ -195,16 +184,29 @@ const CheckoutPage: React.FC = () => {
               </div>
             </div>
           </div>
-          
+
           {/* M-Pesa Payment Button */}
+
           {!showPaymentForm && (
-            <button
-              onClick={handlePayWithMpesa}
-              className="w-full mt-6 bg-gradient-to-r from-green-600 to-green-500 text-white font-semibold py-4 px-6 rounded-xl hover:from-green-700 hover:to-green-600 transition-all duration-200 shadow-lg hover:shadow-xl flex items-center justify-center gap-2"
-            >
-              <Phone size={20} />
-              Pay KSh {total.toLocaleString()} with M-Pesa
-            </button>
+            <div className="mt-6 flex flex-col md:flex-row gap-4 w-full">
+              {/* M-Pesa Button */}
+              <button
+                onClick={handlePayWithMpesa}
+                className="w-full bg-gradient-to-r from-green-600 to-green-500 text-white font-semibold py-4 px-6 rounded-xl hover:from-green-700 hover:to-green-600 transition-all duration-200 shadow-lg hover:shadow-xl flex items-center justify-center gap-2"
+              >
+                <Phone size={20} />
+                Pay with M-Pesa
+              </button>
+
+              {/* Pay with Card Button */}
+              <button
+                onClick={handleCardPayment}
+                className="w-full bg-gradient-to-r from-blue-600 to-blue-500 text-white font-semibold py-4 px-6 rounded-xl hover:from-blue-700 hover:to-blue-600 transition-all duration-200 shadow-lg hover:shadow-xl flex items-center justify-center gap-2"
+              >
+                <Lock size={20} />
+                Pay with Card
+              </button>
+            </div>
           )}
         </div>
 
@@ -217,7 +219,7 @@ const CheckoutPage: React.FC = () => {
                 <User className="text-orange-500" size={20} />
                 Customer Information
               </h2>
-              
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
                 <div>
                   <label className="block text-xs md:text-sm font-medium text-gray-700 mb-1 md:mb-2">Full Name *</label>
@@ -229,7 +231,7 @@ const CheckoutPage: React.FC = () => {
                     placeholder="Enter your full name"
                   />
                 </div>
-                
+
                 <div>
                   <label className="block text-xs md:text-sm font-medium text-gray-700 mb-1 md:mb-2">Email *</label>
                   <input
@@ -240,7 +242,7 @@ const CheckoutPage: React.FC = () => {
                     placeholder="your@email.com"
                   />
                 </div>
-                
+
                 <div>
                   <label className="block text-xs md:text-sm font-medium text-gray-700 mb-1 md:mb-2">Phone Number *</label>
                   <input
@@ -251,7 +253,7 @@ const CheckoutPage: React.FC = () => {
                     placeholder="0700 000 000"
                   />
                 </div>
-                
+
                 <div>
                   <label className="block text-xs md:text-sm font-medium text-gray-700 mb-1 md:mb-2">City *</label>
                   <input
@@ -263,7 +265,7 @@ const CheckoutPage: React.FC = () => {
                   />
                 </div>
               </div>
-              
+
               <div className="mt-3 md:mt-4">
                 <label className="block text-xs md:text-sm font-medium text-gray-700 mb-1 md:mb-2">Delivery Address *</label>
                 <textarea
@@ -274,7 +276,7 @@ const CheckoutPage: React.FC = () => {
                   placeholder="Enter your delivery address"
                 />
               </div>
-              
+
               <div className="mt-3 md:mt-4">
                 <label className="block text-xs md:text-sm font-medium text-gray-700 mb-1 md:mb-2">Special Notes (Optional)</label>
                 <textarea
@@ -293,7 +295,7 @@ const CheckoutPage: React.FC = () => {
                 <Phone className="text-green-600" size={20} />
                 M-Pesa Payment
               </h2>
-              
+
               <div className="space-y-4">
                 <div className="flex items-center gap-3 p-3 md:p-4 bg-green-50 rounded-lg border border-green-200">
                   <div className="w-10 h-10 md:w-12 md:h-12 bg-green-600 rounded-full flex items-center justify-center flex-shrink-0">
@@ -304,7 +306,7 @@ const CheckoutPage: React.FC = () => {
                     <p className="text-xs md:text-sm text-green-600">Pay securely with your mobile money</p>
                   </div>
                 </div>
-                
+
                 <div>
                   <label className="block text-xs md:text-sm font-medium text-gray-700 mb-1 md:mb-2">
                     M-Pesa Phone Number *
@@ -320,7 +322,7 @@ const CheckoutPage: React.FC = () => {
                     Enter the phone number registered with M-Pesa
                   </p>
                 </div>
-                
+
                 <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 md:p-4">
                   <h4 className="text-sm md:text-base font-semibold text-amber-800 mb-1">Payment Amount</h4>
                   <p className="text-xl md:text-2xl font-bold text-amber-900">KSh {total.toLocaleString()}</p>
@@ -375,7 +377,7 @@ const CheckoutPage: React.FC = () => {
                 </p>
                 <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
                   <p className="text-xs md:text-sm text-blue-800">
-                    <strong>Amount:</strong> KSh {total.toLocaleString()}<br/>
+                    <strong>Amount:</strong> KSh {total.toLocaleString()}<br />
                     <strong>To:</strong> {mpesaPhone}
                   </p>
                 </div>
