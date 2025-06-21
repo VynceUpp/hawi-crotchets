@@ -4,6 +4,7 @@ import { ShoppingBag, Phone, MapPin, User, Lock, ChevronDown, ChevronUp } from '
 import { useRouter } from 'next/navigation';
 import { useCart } from '@/context/CartContext';
 import { loadStripe } from '@stripe/stripe-js';
+import Loading from '../loading';
 
 const CheckoutPage: React.FC = () => {
   const { cartItems, updateQuantity } = useCart();
@@ -94,6 +95,9 @@ const CheckoutPage: React.FC = () => {
         Your cart is empty. Please add products before checking out.
       </div>
     );
+  }
+   if (loading) {
+    return <Loading />;
   }
 
   return (
