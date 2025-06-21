@@ -61,6 +61,7 @@ const CheckoutPage: React.FC = () => {
   };
 
   const handleCardPayment = async () => {
+    setLoading(true);
     const stripe = await stripePromise;
     const response = await fetch('/api/checkout', {
       method: 'POST',
@@ -72,6 +73,7 @@ const CheckoutPage: React.FC = () => {
 
     if (data.url) {
       window.location.href = data.url;
+      setLoading(false);
     } else {
       alert('Stripe checkout failed');
     }
