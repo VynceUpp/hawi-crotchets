@@ -388,7 +388,7 @@ export default function ProductDetailPage() {
     const [isFavorited, setIsFavorited] = useState(false);
     const [showCartModal, setShowCartModal] = useState(false);
     const [activeTab, setActiveTab] = useState('description');
-
+    const router = useRouter();
     const product = sampleProduct;
     const discountPercentage = product.originalPrice
         ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)
@@ -433,7 +433,7 @@ export default function ProductDetailPage() {
                 <Button
                     variant="ghost"
                     className="mb-8 hover:bg-white/50"
-                    onClick={() => window.history.back()}
+                    onClick={() => router.push('/shop')}
                 >
                     <ArrowLeft className="w-4 h-4 mr-2" />
                     Back to Products

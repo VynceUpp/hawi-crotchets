@@ -12,6 +12,11 @@ type Product = {
     category: string;
     rating: number;
     isNew: boolean;
+    colors: string[];
+    reviews: number;
+    originalPrice?: number;
+    isSale?: boolean;
+    slug: string;
 };
 
 export const useProducts = () => {
