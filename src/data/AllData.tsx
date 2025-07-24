@@ -171,7 +171,7 @@ export const socialLinks = [
     icon: Instagram,
     href: "https://www.instagram.com/hawi_crochets/",
     color: "hover:text-pink-500",
-    followers: "277"
+    followers: "323"
   },
   {
     name: "WhatsApp",
